@@ -1,5 +1,4 @@
 LOCAL_PATH := $(call my-dir)
-LOCAL_CFLAGS := -Wno-error -fno-strict-aliasing
 BB_PATH := $(LOCAL_PATH)
 
 # Bionic Branches Switches (CM7/AOSP/ICS)
@@ -99,7 +98,6 @@ BUSYBOX_C_INCLUDES = \
 	$(BB_PATH)/android/librpc
 
 BUSYBOX_CFLAGS = \
-	-Wno-error \
 	-Werror=implicit \
 	-fno-strict-aliasing \
 	-DNDEBUG \
