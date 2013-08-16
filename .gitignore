@@ -26,7 +26,6 @@ Config.in
 # Backups / patches
 #
 *~
-*.orig
 *.rej
 /*.patch
 /.config.old
