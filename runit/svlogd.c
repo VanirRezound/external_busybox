@@ -745,6 +745,11 @@ static NOINLINE unsigned logdir_open(struct logdir *ld, const char *fn)
 				ld->inst = new;
 				break;
 			case 's': {
+				static const struct suffix_mult km_suffixes[] = {
+					{ "k", 1024 },
+					{ "m", 1024*1024 },
+					{ "", 0 }
+				};
 				ld->sizemax = xatou_sfx(&s[1], km_suffixes);
 				break;
 			}

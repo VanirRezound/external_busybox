@@ -39,10 +39,7 @@
  *   -q, --quiet, -s, --silent     suppress most error messages
  *   -v, --verbose                 report error messages
  *
- * bbox supports: -f (partially) -n -v (fully), -q -s (accepts but ignores)
- * Note: we export the -f flag, but our -f behaves like coreutils' -e.
- * Unfortunately, there isn't a C lib function we can leverage to get this
- * behavior which means we'd have to implement the full stack ourselves :(.
+ * bbox supports: -f -n -v (fully), -q -s (accepts but ignores)
  */
 
 int readlink_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;

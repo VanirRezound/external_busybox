@@ -79,12 +79,12 @@ int sulogin_main(int argc UNUSED_PARAM, char **argv)
 		char *encrypted;
 		int r;
 
-		/* cp points to a static buffer */
+		/* cp points to a static buffer that is zeroed every time */
 		cp = bb_ask(STDIN_FILENO, timeout,
 				"Give root password for system maintenance\n"
 				"(or type Control-D for normal startup):");
-		if (!cp) {
-			/* ^D, ^C, timeout, or read error */
+
+		if (!cp || !*cp) {
 			bb_info_msg("Normal startup");
 			return 0;
 		}

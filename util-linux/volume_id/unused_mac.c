@@ -18,17 +18,6 @@
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-//kbuild:### lib-$(CONFIG_FEATURE_VOLUMEID_MAC) += mac.o
-
-//config:
-//config:### config FEATURE_VOLUMEID_MAC
-//config:###	bool "mac filesystem"
-//config:###	default y
-//config:###	depends on VOLUMEID
-//config:###	help
-//config:###	  TODO
-//config:
-
 #include "volume_id_internal.h"
 
 struct mac_driver_desc {

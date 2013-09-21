@@ -16,7 +16,6 @@
 #include "libbb.h"
 #include <mtd/mtd-user.h>
 
-/* If 1, simulates "flashing" by writing to existing regular file */
 #define MTD_DEBUG 0
 
 #define OPT_v (1 << 0)
@@ -33,7 +32,7 @@ static void progress(int mode, uoff_t count, uoff_t total)
 	if (total)
 		percent = (unsigned) (percent / total);
 	printf("\r%s: %"OFF_FMT"u/%"OFF_FMT"u (%u%%) ",
-		(mode < 0) ? "Erasing block" : ((mode == 0) ? "Writing kb" : "Verifying kb"),
+		(mode == 0) ? "Erasing block" : ((mode == 1) ? "Writing kb" : "Verifying kb"),
 		count, total, (unsigned)percent);
 	fflush_all();
 }
@@ -98,7 +97,8 @@ int flashcp_main(int argc UNUSED_PARAM, char **argv)
 #endif
 	e.start = 0;
 	for (i = 1; i <= erase_count; i++) {
-		progress(-1, i, erase_count);
+		progress(0, i, erase_count);
+		errno = 0;
 #if !MTD_DEBUG
 		if (ioctl(fd_d, MEMERASE, &e) < 0) {
 			bb_perror_msg_and_die("erase error at 0x%llx on %s",
@@ -113,7 +113,7 @@ int flashcp_main(int argc UNUSED_PARAM, char **argv)
 
 	/* doing this outer loop gives significantly smaller code
 	 * than doing two separate loops for writing and verifying */
-	for (i = 0; i <= 1; i++) {
+	for (i = 1; i <= 2; i++) {
 		uoff_t done;
 		unsigned count;
 
@@ -122,29 +122,25 @@ int flashcp_main(int argc UNUSED_PARAM, char **argv)
 		done = 0;
 		count = BUFSIZE;
 		while (1) {
-			uoff_t rem;
-
-			progress(i, done / 1024, (uoff_t)statb.st_size / 1024);
-			rem = statb.st_size - done;
+			uoff_t rem = statb.st_size - done;
 			if (rem == 0)
 				break;
 			if (rem < BUFSIZE)
 				count = rem;
+			progress(i, done / 1024, (uoff_t)statb.st_size / 1024);
 			xread(fd_f, buf, count);
-			if (i == 0) {
+			if (i == 1) {
 				int ret;
-				if (count < BUFSIZE)
-					memset((char*)buf + count, 0, BUFSIZE - count);
 				errno = 0;
-				ret = full_write(fd_d, buf, BUFSIZE);
-				if (ret != BUFSIZE) {
+				ret = full_write(fd_d, buf, count);
+				if (ret != (int) count) {
 					bb_perror_msg_and_die("write error at 0x%"OFF_FMT"x on %s, "
 						"write returned %d",
 						done, devicename, ret);
 				}
-			} else { /* i == 1 */
+			} else { /* i == 2 */
 				xread(fd_d, buf2, count);
-				if (memcmp(buf, buf2, count) != 0) {
+				if (memcmp(buf, buf2, count)) {
 					bb_error_msg_and_die("verification mismatch at 0x%"OFF_FMT"x", done);
 				}
 			}

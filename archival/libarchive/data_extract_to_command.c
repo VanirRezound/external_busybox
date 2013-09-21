@@ -103,7 +103,7 @@ void FAST_FUNC data_extract_to_command(archive_handle_t *archive_handle)
 				archive_handle->tar__to_command_shell,
 				"-c",
 				archive_handle->tar__to_command,
-				(char *)0);
+				NULL);
 			bb_perror_msg_and_die("can't execute '%s'", archive_handle->tar__to_command_shell);
 		}
 		close(p[0]);

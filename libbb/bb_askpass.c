@@ -65,9 +65,7 @@ char* FAST_FUNC bb_ask(const int fd, int timeout, const char *prompt)
 	i = 0;
 	while (1) {
 		int r = read(fd, &ret[i], 1);
-		if ((i == 0 && r == 0) /* EOF (^D) with no password */
-		 || r < 0
-		) {
+		if (r < 0) {
 			/* read is interrupted by timeout or ^C */
 			ret = NULL;
 			break;

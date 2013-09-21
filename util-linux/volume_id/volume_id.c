@@ -18,8 +18,6 @@
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-//kbuild:lib-$(CONFIG_VOLUMEID) += volume_id.o util.o
-
 #include "volume_id_internal.h"
 
 
@@ -137,9 +135,6 @@ static const probe_fptr fs2[] = {
 #endif
 #if ENABLE_FEATURE_VOLUMEID_UFS
 	volume_id_probe_ufs,
-#endif
-#if ENABLE_FEATURE_VOLUMEID_F2FS
-	volume_id_probe_f2fs,
 #endif
 #if ENABLE_FEATURE_VOLUMEID_NILFS
 	volume_id_probe_nilfs,

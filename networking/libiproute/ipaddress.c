@@ -627,12 +627,10 @@ static int ipaddr_modify(int cmd, char **argv)
 	req.ifa.ifa_family = preferred_family;
 
 	while (*argv) {
-		unsigned arg = index_in_strings(option, *argv);
-		/* if search fails, "local" is assumed */
-		if ((int)arg >= 0)
+		const smalluint arg = index_in_strings(option, *argv);
+		if (arg <= 1) { /* peer, remote */
 			NEXT_ARG();
 
-		if (arg <= 1) { /* peer, remote */
 			if (peer_len) {
 				duparg("peer", *argv);
 			}
@@ -645,6 +643,7 @@ static int ipaddr_modify(int cmd, char **argv)
 			req.ifa.ifa_prefixlen = peer.bitlen;
 		} else if (arg <= 3) { /* broadcast, brd */
 			inet_prefix addr;
+			NEXT_ARG();
 			if (brd_len) {
 				duparg("broadcast", *argv);
 			}
@@ -661,6 +660,7 @@ static int ipaddr_modify(int cmd, char **argv)
 			}
 		} else if (arg == 4) { /* anycast */
 			inet_prefix addr;
+			NEXT_ARG();
 			if (any_len) {
 				duparg("anycast", *argv);
 			}
@@ -672,18 +672,22 @@ static int ipaddr_modify(int cmd, char **argv)
 			any_len = addr.bytelen;
 		} else if (arg == 5) { /* scope */
 			uint32_t scope = 0;
+			NEXT_ARG();
 			if (rtnl_rtscope_a2n(&scope, *argv)) {
 				invarg(*argv, "scope");
 			}
 			req.ifa.ifa_scope = scope;
 			scoped = 1;
 		} else if (arg == 6) { /* dev */
+			NEXT_ARG();
 			d = *argv;
 		} else if (arg == 7) { /* label */
+			NEXT_ARG();
 			l = *argv;
 			addattr_l(&req.n, sizeof(req), IFA_LABEL, l, strlen(l) + 1);
 		} else {
-			/* local (specified or assumed) */
+			if (arg == 8) /* local */
+				NEXT_ARG();
 			if (local_len) {
 				duparg2("local", *argv);
 			}
@@ -720,7 +724,7 @@ static int ipaddr_modify(int cmd, char **argv)
 		}
 		brd = peer;
 		if (brd.bitlen <= 30) {
-			for (i = 31; i >= brd.bitlen; i--) {
+			for (i=31; i>=brd.bitlen; i--) {
 				if (brd_len == -1)
 					brd.data[0] |= htonl(1<<(31-i));
 				else
@@ -750,11 +754,11 @@ int FAST_FUNC do_ipaddr(char **argv)
 {
 	static const char commands[] ALIGN1 =
 		"add\0""delete\0""list\0""show\0""lst\0""flush\0";
-	int cmd = 2;
+	smalluint cmd = 2;
 	if (*argv) {
 		cmd = index_in_substrings(commands, *argv);
-		if (cmd < 0)
-			invarg(*argv, applet_name);
+		if (cmd > 5)
+			bb_error_msg_and_die(bb_msg_invalid_arg, *argv, applet_name);
 		argv++;
 		if (cmd <= 1)
 			return ipaddr_modify((cmd == 0) ? RTM_NEWADDR : RTM_DELADDR, argv);

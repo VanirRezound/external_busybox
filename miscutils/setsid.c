@@ -31,17 +31,7 @@ int setsid_main(int argc UNUSED_PARAM, char **argv)
 
 	/* setsid() is allowed only when we are not a process group leader.
 	 * Otherwise our PID serves as PGID of some existing process group
-	 * and cannot be used as PGID of a new process group.
-	 *
-	 * Example: setsid() below fails when run alone in interactive shell:
-	 *  $ setsid PROG
-	 * because shell's child (setsid) is put in a new process group.
-	 * But doesn't fail if shell is not interactive
-	 * (and therefore doesn't create process groups for pipes),
-	 * or if setsid is not the first process in the process group:
-	 *  $ true | setsid PROG
-	 * or if setsid is executed in backquotes (`setsid PROG`)...
-	 */
+	 * and cannot be used as PGID of a new process group. */
 	if (setsid() < 0) {
 		pid_t pid = fork_or_rexec(argv);
 		if (pid != 0) {
@@ -53,7 +43,7 @@ int setsid_main(int argc UNUSED_PARAM, char **argv)
 			 * However, the code is larger and upstream
 			 * does not do such trick.
 			 */
-			return EXIT_SUCCESS;
+			exit(EXIT_SUCCESS);
 		}
 
 		/* child */

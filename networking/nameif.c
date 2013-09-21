@@ -292,11 +292,12 @@ int nameif_main(int argc UNUSED_PARAM, char **argv)
 			if (ch->mac && memcmp(ch->mac, ifr.ifr_hwaddr.sa_data, ETH_ALEN) != 0)
 				continue;
 			/* if we came here, all selectors have matched */
-			goto found;
+			break;
 		}
 		/* Nothing found for current interface */
-		continue;
- found:
+		if (!ch)
+			continue;
+
 		if (strcmp(ifr.ifr_name, ch->ifname) != 0) {
 			strcpy(ifr.ifr_newname, ch->ifname);
 			ioctl_or_perror_and_die(ctl_sk, SIOCSIFNAME, &ifr,
@@ -312,14 +313,10 @@ int nameif_main(int argc UNUSED_PARAM, char **argv)
 			ch->next->prev = ch->prev;
 		if (ENABLE_FEATURE_CLEAN_UP)
 			delete_eth_table(ch);
-	} /* while */
-
+	}
 	if (ENABLE_FEATURE_CLEAN_UP) {
-		ethtable_t *next;
-		for (ch = clist; ch; ch = next) {
-			next = ch->next;
+		for (ch = clist; ch; ch = ch->next)
 			delete_eth_table(ch);
-		}
 		config_close(parser);
 	};
 

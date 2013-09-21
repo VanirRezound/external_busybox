@@ -52,7 +52,7 @@ struct globals {
 static void error_exit(const char *str) NORETURN;
 static void error_exit(const char *str)
 {
-	/* Release all acquired resources */
+	//release all acquired resources
 	shmdt(shbuf);
 	bb_perror_msg_and_die(str);
 }
@@ -66,10 +66,11 @@ static void sem_up(int semid)
 		error_exit("semop[SMrup]");
 }
 
-static void interrupted(int sig)
+static void interrupted(int sig UNUSED_PARAM)
 {
+	signal(SIGINT, SIG_IGN);
 	shmdt(shbuf);
-	kill_myself_with_sig(sig);
+	exit(EXIT_SUCCESS);
 }
 
 int logread_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
@@ -95,7 +96,7 @@ int logread_main(int argc UNUSED_PARAM, char **argv)
 	if (log_semid == -1)
 		error_exit("can't get access to semaphores for syslogd buffer");
 
-	bb_signals(BB_FATAL_SIGS, interrupted);
+	signal(SIGINT, interrupted);
 
 	/* Suppose atomic memory read */
 	/* Max possible value for tail is shbuf->size - 1 */

@@ -125,9 +125,11 @@ static void subneg(byte c);
 
 static void iac_flush(void)
 {
-	full_write(netfd, G.iacbuf, G.iaclen);
+	write(netfd, G.iacbuf, G.iaclen);
 	G.iaclen = 0;
 }
+
+#define write_str(fd, str) write(fd, str, sizeof(str) - 1)
 
 static void doexit(int ev) NORETURN;
 static void doexit(int ev)
@@ -143,7 +145,7 @@ static void con_escape(void)
 	if (bb_got_signal) /* came from line mode... go raw */
 		rawmode();
 
-	full_write1_str("\r\nConsole escape. Commands are:\r\n\n"
+	write_str(1, "\r\nConsole escape. Commands are:\r\n\n"
 			" l	go to line mode\r\n"
 			" c	go to character mode\r\n"
 			" z	suspend telnet\r\n"
@@ -174,7 +176,7 @@ static void con_escape(void)
 		doexit(EXIT_SUCCESS);
 	}
 
-	full_write1_str("continuing...\r\n");
+	write_str(1, "continuing...\r\n");
 
 	if (bb_got_signal)
 		cookmode();
@@ -381,11 +383,10 @@ static void put_iac_naws(byte c, int x, int y)
 	put_iac(SB);
 	put_iac(c);
 
-	/* "... & 0xff" implicitly done below */
-	put_iac(x >> 8);
-	put_iac(x);
-	put_iac(y >> 8);
-	put_iac(y);
+	put_iac((x >> 8) & 0xff);
+	put_iac(x & 0xff);
+	put_iac((y >> 8) & 0xff);
+	put_iac(y & 0xff);
 
 	put_iac(IAC);
 	put_iac(SE);

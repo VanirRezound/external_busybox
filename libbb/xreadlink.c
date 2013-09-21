@@ -102,8 +102,7 @@ char* FAST_FUNC xmalloc_readlink_or_warn(const char *path)
 
 char* FAST_FUNC xmalloc_realpath(const char *path)
 {
-#if defined(__GLIBC__) || \
-    (defined(__UCLIBC__) && UCLIBC_VERSION >= KERNEL_VERSION(0, 9, 31))
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
 	/* glibc provides a non-standard extension */
 	/* new: POSIX.1-2008 specifies this behavior as well */
 	return realpath(path, NULL);

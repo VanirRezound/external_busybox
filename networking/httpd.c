@@ -1709,8 +1709,8 @@ static int pam_talker(int num_msg,
 			s = userinfo->pw;
 			break;
 		case PAM_ERROR_MSG:
-		case PAM_TEXT_INFO:
-			s = "";
+        	case PAM_TEXT_INFO:
+        		s = "";
 			break;
 		default:
 			free(response);
@@ -1964,9 +1964,7 @@ static void handle_incoming_and_exit(const len_and_sockaddr *fromAddr)
 		send_headers_and_exit(HTTP_BAD_REQUEST);
 
 	/* Determine type of request (GET/POST) */
-	// rfc2616: method and URI is separated by exactly one space
-	//urlp = strpbrk(iobuf, " \t"); - no, tab isn't allowed
-	urlp = strchr(iobuf, ' ');
+	urlp = strpbrk(iobuf, " \t");
 	if (urlp == NULL)
 		send_headers_and_exit(HTTP_BAD_REQUEST);
 	*urlp++ = '\0';
@@ -1984,8 +1982,7 @@ static void handle_incoming_and_exit(const len_and_sockaddr *fromAddr)
 	if (strcasecmp(iobuf, request_GET) != 0)
 		send_headers_and_exit(HTTP_NOT_IMPLEMENTED);
 #endif
-	// rfc2616: method and URI is separated by exactly one space
-	//urlp = skip_whitespace(urlp); - should not be necessary
+	urlp = skip_whitespace(urlp);
 	if (urlp[0] != '/')
 		send_headers_and_exit(HTTP_BAD_REQUEST);
 
