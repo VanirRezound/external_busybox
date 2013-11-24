@@ -1,8 +1,8 @@
 /*
  * Automatically generated C config: don't edit
- * Busybox version: 1.22.1-jb
+ * Busybox version: 1.21.1-kk
  */
-#define AUTOCONF_TIMESTAMP "2013-08-16 09:23 -0400"
+#define AUTOCONF_TIMESTAMP "2013-11-24 11:52 +0100"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -2940,6 +2940,10 @@
 # define IF_BLOCKDEV(...) __VA_ARGS__
 #endif
 #define IF_NOT_BLOCKDEV(...)
+#define CONFIG_FSTRIM 1
+#define ENABLE_FSTRIM 1
+#define IF_FSTRIM(...) __VA_ARGS__
+#define IF_NOT_FSTRIM(...)
 #undef CONFIG_MDEV
 #define ENABLE_MDEV 0
 #define IF_MDEV(...)
@@ -3100,14 +3104,6 @@
 #define ENABLE_FSCK_MINIX 0
 #define IF_FSCK_MINIX(...)
 #define IF_NOT_FSCK_MINIX(...) __VA_ARGS__
-#define CONFIG_FSTRIM 1
-#define ENABLE_FSTRIM 1
-#ifdef MAKE_SUID
-# define IF_FSTRIM(...) __VA_ARGS__ "CONFIG_FSTRIM"
-#else
-# define IF_FSTRIM(...) __VA_ARGS__
-#endif
-#define IF_NOT_FSTRIM(...)
 #define CONFIG_MKFS_EXT2 1
 #define ENABLE_MKFS_EXT2 1
 #ifdef MAKE_SUID
