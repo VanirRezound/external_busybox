@@ -120,6 +120,7 @@ BUSYBOX_C_INCLUDES = \
 
 BUSYBOX_CFLAGS = \
 	-Werror=implicit \
+  -Wno-error=format-security \
 	-fno-strict-aliasing \
 	-DNDEBUG \
 	-DANDROID \
