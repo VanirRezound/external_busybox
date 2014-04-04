@@ -61,6 +61,8 @@ CFLAGS += $(call cc-option,-fno-asynchronous-unwind-tables,)
 # be fixed..
 #CFLAGS += $(call cc-option,-Wconversion,)
 
+CFLAGS += $(call cc-option,-fno-strict-aliasing,)
+
 ifneq ($(CONFIG_DEBUG),y)
 CFLAGS += $(call cc-option,-Os,$(call cc-option,-O2,))
 else
